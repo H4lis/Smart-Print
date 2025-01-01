@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:smartprint/pages/login_page.dart';
 
-class Splashpage extends StatelessWidget {
+class Splashpage extends StatefulWidget {
   const Splashpage({super.key});
 
+  @override
+  State<Splashpage> createState() => _SplashpageState();
+}
+
+class _SplashpageState extends State<Splashpage> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(seconds: 3),() {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+    },);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

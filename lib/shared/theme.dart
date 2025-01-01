@@ -10,10 +10,14 @@ Color greyDarkColor = Color(0xff3F444D);
 
 Color bagroundColor = Color(0xffF8F9FC);
 Color whiteColor = Colors.white;
+Color yellowColor = Color(0xfffFFC120);
+Color soldColor = Color(0xffDCE7FE);
+Color secondaryColor = Color(0xffDCE7FE);
 
 TextStyle blackTextStyle = TextStyle(color: blackColor);
 TextStyle whiteTextStyle = TextStyle(color: whiteColor);
 TextStyle greyTextStyle = TextStyle(color: greyColor);
+TextStyle greyDarkTextStyle = TextStyle(color: greyDarkColor);
 TextStyle blueTextStyle = TextStyle(color: primaryColor);
 
 FontWeight light = FontWeight.w300;

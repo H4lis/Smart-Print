@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smartprint/pages/beranda_page.dart';
 import 'package:smartprint/widgets/code_textfield.dart';
 import 'package:smartprint/widgets/costum_button.dart';
 import 'package:smartprint/widgets/costum_divider.dart';
@@ -55,7 +56,15 @@ class VerifikasiPage extends StatelessWidget {
             SizedBox(
               height: 36,
             ),
-            CostumButton(title: "Lanjutkan"),
+            CostumButton(
+              onPressed: () {
+                  Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BerandaPage(),
+            ));
+              },
+              title: "Lanjutkan"),
             SizedBox(
               height: 36,
             ),
