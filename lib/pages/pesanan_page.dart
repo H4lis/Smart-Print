@@ -41,6 +41,7 @@ class _PesananPageState extends State<PesananPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bagroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: whiteColor,

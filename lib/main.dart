@@ -1,8 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:smartprint/firebase_options.dart';
 import 'package:smartprint/pages/login_page.dart';
+import 'package:smartprint/pages/wrapper_page.dart';
 import 'pages/splash_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -11,14 +19,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: LoginPage(),
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Menunggu hasil status login
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'SmartPrint App',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            home: CircularProgressIndicator(), // Halaman Splash ketika memuat
+          );
+        }
+
+        // Jika pengguna sudah login, arahkan ke halaman utama
+        if (snapshot.hasData) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'SmartPrint App',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            home: WrapperPage(), // Halaman utama setelah login
+          );
+        }
+
+        // Jika pengguna belum login, arahkan ke halaman login
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'SmartPrint App',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home: LoginPage(), // Halaman Login jika belum login
+        );
+      },
     );
   }
 }

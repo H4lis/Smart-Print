@@ -1,16 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:smartprint/widgets/toko_card.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../data/midtrans_service.dart';
-import '../services/transaction_service.dart';
 import '../models/produk_model.dart';
-import '../models/toko_model.card.dart';
 import '../shared/theme.dart';
-import '../widgets/payment_screen.dart';
 import '../widgets/photo_koment.dart';
 
 class DetailProduk extends StatefulWidget {
@@ -28,7 +24,7 @@ class _DetailProdukState extends State<DetailProduk> {
   void _showPaymentMethodPopup(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: true, // Dialog bisa ditutup jika klik di luar
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Pilih Metode Pembayaran'),
@@ -37,10 +33,24 @@ class _DetailProdukState extends State<DetailProduk> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
+                  title: Text("QRIS"),
+                  leading: Icon(Icons.payment, color: Colors.purple),
+                  onTap: () {
+                    _processTransaction(context, "qris");
+                  },
+                ),
+                ListTile(
                   title: Text("GoPay"),
                   leading: Icon(Icons.payment, color: Colors.green),
                   onTap: () {
                     _processTransaction(context, "gopay");
+                  },
+                ),
+                ListTile(
+                  title: Text("ShopeePay"),
+                  leading: Icon(Icons.payment, color: Colors.orange),
+                  onTap: () {
+                    _processTransaction(context, "shopeepay");
                   },
                 ),
                 ListTile(
@@ -57,6 +67,9 @@ class _DetailProdukState extends State<DetailProduk> {
                     _processTransaction(context, "credit_card");
                   },
                 ),
+                // Tambahkan pilihan ShopeePay
+
+                // Tambahkan pilihan QRIS
               ],
             ),
           ),
@@ -67,10 +80,39 @@ class _DetailProdukState extends State<DetailProduk> {
 
   Future<void> _processTransaction(
       BuildContext context, String paymentMethod) async {
-    // Menutup dialog setelah memilih metode pembayaran
     Navigator.of(context).pop();
 
     try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw 'Pengguna belum login';
+      }
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        throw 'Data pengguna tidak ditemukan di Firestore';
+      }
+
+      final userData = userDoc.data();
+
+      final fullName = userData?['name'] ?? "User SmartPrint";
+      final nameParts = fullName.split(" ");
+      final firstName = nameParts.first;
+      final lastName =
+          nameParts.length > 1 ? nameParts.skip(1).join(" ") : "SmartPrint";
+
+      final customerDetails = {
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": user.email ?? "email@example.com",
+        "phone": userData?['phone'] ?? "081234567890",
+      };
+
       final orderId = "order-${DateTime.now().millisecondsSinceEpoch}";
 
       final transactionDetails = {
@@ -79,23 +121,19 @@ class _DetailProdukState extends State<DetailProduk> {
           "order_id": orderId,
           "gross_amount": widget.produk.price,
         },
-        "customer_details": {
-          "first_name": "NamaDepan",
-          "last_name": "NamaBelakang",
-          "email": "email@example.com",
-          "phone": "081234567890",
-        },
+        "customer_details": customerDetails,
       };
 
       final response =
           await MidtransService.createTransaction(transactionDetails);
       print('Transaksi berhasil: $response');
 
-      // Menangani response dari Midtrans
       if (response['actions'] != null) {
         for (var action in response['actions']) {
           if (action['name'] == 'generate-qr-code' &&
-              paymentMethod == "gopay") {
+              (paymentMethod == "gopay" ||
+                  paymentMethod == "shopeepay" ||
+                  paymentMethod == "qris")) {
             final qrCodeUrl = action['url'];
             _launchGoPayPayment(qrCodeUrl);
           } else if (action['name'] == 'deeplink-redirect') {
@@ -525,52 +563,8 @@ class _DetailProdukState extends State<DetailProduk> {
           Expanded(
             child: ElevatedButton(
               onPressed: () async {
-                // try {
-                //   final orderId =
-                //       "order-${DateTime.now().millisecondsSinceEpoch}";
-                //   final response = await TransactionService.createTransaction(
-                //     price: produk.price,
-                //     orderId: orderId,
-                //     firstName: "NamaDepan",
-                //     lastName: "NamaBelakang",
-                //     email: "email@example.com",
-                //     phone: "081234567890",
-                //   );
-
-                //   print('Transaction successful: $response');
-
-                //   if (response['actions'] != null) {
-                //     for (var action in response['actions']) {
-                //       if (action['name'] == 'generate-qr-code') {
-                //         final qrCodeUrl = action['url'];
-                //         _launchGoPayPayment(qrCodeUrl);
-                //       } else if (action['name'] == 'deeplink-redirect') {
-                //         final deeplinkUrl = action['url'];
-                //         _launchURL(
-                //             deeplinkUrl); // Redirect ke GoPay menggunakan deeplink
-                //       }
-                //     }
-                //   }
-                // } catch (e) {
-                //   print('Error during transaction: $e');
-                // }
-                // _showPaymentMethodPopup(context);
-
-                try {
-                  // Panggil API untuk mendapatkan Snap URL
-                  final snapUrl =
-                      "https://app.sandbox.midtrans.com/snap/v2/vtweb/YOUR-SNAP-TOKEN";
-
-                  // Buka halaman WebView
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentScreen(snapUrl: snapUrl),
-                    ),
-                  );
-                } catch (e) {
-                  print("Error loading payment: $e");
-                }
+             
+                _showPaymentMethodPopup(context);
               },
               child: Text(
                 "Beli Sekarang",

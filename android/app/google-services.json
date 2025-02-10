@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "230753965139",
+    "project_id": "smartprint-50c22",
+    "storage_bucket": "smartprint-50c22.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230753965139:android:a24f0b4ea99a335bf1a2a6",
+        "android_client_info": {
+          "package_name": "com.example.smartprint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByiUpdK75x052p11TEWeuqsGYBgN8jSJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,12 +1,12 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:smartprint/shared/theme.dart';
 
 class CostumTextField extends StatefulWidget {
-  final title;
-  final hintText;
-  final iconImage;
-  bool obscureText;
+  final String title;
+  final String hintText;
+  final String iconImage;
+  final bool obscureText;
+  final TextEditingController? controller;
 
   CostumTextField({
     super.key,
@@ -14,6 +14,7 @@ class CostumTextField extends StatefulWidget {
     required this.hintText,
     required this.iconImage,
     this.obscureText = false,
+    this.controller,
   });
 
   @override
@@ -26,7 +27,7 @@ class _CostumTextFieldState extends State<CostumTextField> {
   @override
   void initState() {
     super.initState();
-    _isObscure = widget.obscureText; // Initialize with the provided value
+    _isObscure = widget.obscureText;
   }
 
   @override
@@ -38,20 +39,17 @@ class _CostumTextFieldState extends State<CostumTextField> {
           widget.title,
           style: blackTextStyle.copyWith(fontSize: 14),
         ),
-        const SizedBox(
-          height: 8,
-        ),
+        const SizedBox(height: 8),
         Container(
           height: 48,
           child: TextField(
-            obscureText: widget.obscureText,
+            controller: widget.controller,
+            obscureText: _isObscure,
             decoration: InputDecoration(
               prefixIcon: Padding(
                 padding: const EdgeInsets.all(13),
                 child: ImageIcon(
-                  AssetImage(
-                    widget.iconImage,
-                  ),
+                  AssetImage(widget.iconImage),
                   color: greyColor,
                   size: 8,
                 ),
@@ -60,9 +58,7 @@ class _CostumTextFieldState extends State<CostumTextField> {
               hintStyle: greyTextStyle.copyWith(fontSize: 14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                  color: greyColor,
-                ),
+                borderSide: BorderSide(color: greyColor),
               ),
               suffixIcon: widget.obscureText
                   ? IconButton(
@@ -82,9 +78,7 @@ class _CostumTextFieldState extends State<CostumTextField> {
             ),
           ),
         ),
-        SizedBox(
-          height: 18,
-        )
+        const SizedBox(height: 18),
       ],
     );
   }

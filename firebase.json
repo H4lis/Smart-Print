@@ -1,0 +1,38 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "smartprint-50c22",
+          "appId": "1:230753965139:android:a24f0b4ea99a335bf1a2a6",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "smartprint-50c22",
+          "configurations": {
+            "android": "1:230753965139:android:a24f0b4ea99a335bf1a2a6",
+            "ios": "1:230753965139:ios:db492957f3624c1df1a2a6",
+            "web": "1:230753965139:web:4d0ad936f5654815f1a2a6"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

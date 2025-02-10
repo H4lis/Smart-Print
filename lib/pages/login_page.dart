@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smartprint/pages/beranda_page.dart';
 import 'package:smartprint/pages/daftar_page.dart';
@@ -9,8 +10,87 @@ import 'package:smartprint/widgets/option_login.dart';
 
 import '../widgets/costum_text_field.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  TextEditingController emailC = TextEditingController();
+
+  TextEditingController passC = TextEditingController();
+
+  bool _obscurePassword = true;
+
+  void login() async {
+    if (emailC.text.isNotEmpty && passC.text.isNotEmpty) {
+      try {
+        UserCredential userCredential = await auth.signInWithEmailAndPassword(
+          email: emailC.text,
+          password: passC.text,
+        );
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Login Berhasil"),
+            content: const Text("Akun Anda berhasil masuk."),
+          ),
+        );
+
+// Menunggu beberapa detik, lalu menutup dialog dan mengarahkan ke halaman berikutnya
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pop(context); // Menutup dialog
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WrapperPage(),
+            ),
+          );
+        });
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = '';
+        if (e.code == 'user-not-found') {
+          errorMessage =
+              'Tidak ada pengguna yang ditemukan untuk email tersebut.';
+        } else if (e.code == 'wrong-password' ||
+            e.code == 'invalid-credential') {
+          errorMessage = 'Password yang Anda masukkan salah.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'Email yang Anda masukkan salah.';
+        } else {
+          errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+          ),
+        );
+      }
+    } else if (emailC.text.isEmpty && passC.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: const Text('Email dan password harus diisi.'),
+        ),
+      );
+    } else if (passC.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password harus diisi.'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email harus diisi.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +132,13 @@ class LoginPage extends StatelessWidget {
                   height: 48,
                 ),
                 CostumTextField(
+                  controller: emailC,
                   title: "Email",
                   hintText: "Email Anda",
                   iconImage: "assets/images/icon_email.png",
                 ),
                 CostumTextField(
+                  controller: passC,
                   obscureText: true,
                   title: "Password",
                   hintText: "Password Anda",
@@ -67,11 +149,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 CostumButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WrapperPage(),
-                        ));
+                    login();
                   },
                   title: "Login",
                 ),

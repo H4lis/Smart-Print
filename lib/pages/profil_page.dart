@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:smartprint/pages/login_page.dart';
 import 'package:smartprint/pages/notifikasi_page.dart';
 import 'package:smartprint/shared/theme.dart';
 import 'package:smartprint/widgets/profile_card.dart';
@@ -98,44 +100,75 @@ class ProfilePage extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: defaultMargin),
-        child: Column(
-          children: [
-            profileInfo(),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Divider(),
-            ),
-            const ProfileCard(
-              icon: "assets/icons/person.png",
-              title: "Edit Profil",
-            ),
-            const ProfileCard(
-              icon: "assets/icons/lokasi.png",
-              title: "Alamat",
-            ),
-            const ProfileCard(
-              icon: "assets/icons/credit_card.png",
-              title: "Metode Pembayaran",
-            ),
-            const SizedBox(
-              height: 24,
-            ),
-            const ProfileCard(
-              icon: "assets/icons/headset.png",
-              title: "Smart Service",
-            ),
-            const ProfileCard(
-              icon: "assets/icons/gear.png",
-              title: "Pengaturan Akun",
-            ),
-            const SizedBox(
-              height: 24,
-            ),
-            const ProfileCard(
-              icon: "assets/icons/logout.png",
-              title: "Keluar",
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              profileInfo(),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Divider(),
+              ),
+              // Gunakan ProfileCard dengan menambahkan fungsi onTap untuk setiap item
+              ProfileCard(
+                icon: "assets/icons/person.png",
+                title: "Edit Profil",
+                onTap: () {
+                  // Tindakan yang dilakukan saat Edit Profil dipilih
+                  // Arahkan ke halaman edit profil atau lakukan aksi lainnya
+                },
+              ),
+              ProfileCard(
+                icon: "assets/icons/lokasi.png",
+                title: "Alamat",
+                onTap: () {
+                  // Tindakan yang dilakukan saat Alamat dipilih
+                },
+              ),
+              ProfileCard(
+                icon: "assets/icons/credit_card.png",
+                title: "Metode Pembayaran",
+                onTap: () {
+                  // Tindakan yang dilakukan saat Metode Pembayaran dipilih
+                },
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              ProfileCard(
+                icon: "assets/icons/headset.png",
+                title: "Smart Service",
+                onTap: () {
+                  // Tindakan yang dilakukan saat Smart Service dipilih
+                },
+              ),
+              ProfileCard(
+                icon: "assets/icons/gear.png",
+                title: "Pengaturan Akun",
+                onTap: () {
+                  // Tindakan yang dilakukan saat Pengaturan Akun dipilih
+                },
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              ProfileCard(
+                icon: "assets/icons/logout.png",
+                title: "Keluar",
+                onTap: () async {
+                  await FirebaseAuth.instance.signOut();
+                  // Setelah logout, arahkan ke halaman login
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                  // Tindakan logout (misalnya panggil fungsi logout)
+                },
+              ),
+              const SizedBox(
+                height: 304,
+              ),
+            ],
+          ),
         ),
       ),
     );

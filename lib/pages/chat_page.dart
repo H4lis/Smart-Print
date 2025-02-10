@@ -7,6 +7,7 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+          backgroundColor: bagroundColor,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: whiteColor,
